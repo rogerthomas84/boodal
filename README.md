@@ -42,7 +42,7 @@ boodal.alert({
 });
 ```
 
-![Alert](doc/alert.png)
+![alert](doc/alert.png)
 
 
 ### Basic `confirm`
@@ -57,7 +57,7 @@ boodal.alert({
 });
 ```
 
-![Alert](doc/confirm.png)
+![confirm](doc/confirm.png)
 
 ### Basic `text`
 
@@ -71,7 +71,7 @@ boodal.text({
 });
 ```
 
-![Alert](doc/text.png)
+![text](doc/text.png)
 
 ### Basic `email`
 
@@ -85,7 +85,7 @@ boodal.email({
 });
 ```
 
-![Alert](doc/email.png)
+![email](doc/email.png)
 
 ### Basic `number`
 
@@ -99,7 +99,7 @@ boodal.number({
 });
 ```
 
-![Alert](doc/number.png)
+![number](doc/number.png)
 
 ### Basic `select`
 
@@ -114,7 +114,7 @@ boodal.select({
 });
 ```
 
-![Alert](doc/select.png)
+![select](doc/select.png)
 
 ### Basic `checkbox`
 
@@ -129,7 +129,7 @@ boodal.checkbox({
 });
 ```
 
-![Alert](doc/checkbox.png)
+![checkbox](doc/checkbox.png)
 
 ### Basic `radio`
 
@@ -144,7 +144,7 @@ boodal.radio({
 });
 ```
 
-![Alert](doc/radio.png)
+![radio](doc/radio.png)
 
 #### `alert`
 

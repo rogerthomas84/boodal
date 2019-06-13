@@ -570,6 +570,7 @@ let boodal = {
         let radioName = 'boodalRadio' + o._helpers().genId();
         let possibles = o._helpers().arrayToObjectForMulti(opts['options']);
 
+        let hasDef = false;
         for (let optK in possibles) {
             if (possibles.hasOwnProperty(optK) === false) {
                 continue;
@@ -596,7 +597,10 @@ let boodal = {
                 anOptRadio.addClass(opts['attrs']['class']);
             }
             if (opts['val'] === optK || opts['val'] === null) {
-                anOptRadio.prop('checked', true);
+                if (hasDef === false) {
+                    anOptRadio.prop('checked', true);
+                    hasDef = true;
+                }
             }
             anOptCase.append(
                 anOptRadio
