@@ -42,6 +42,9 @@ boodal.alert({
 });
 ```
 
+![Alert](doc/alert.png)
+
+
 ### Basic `confirm`
 
 ```javascript
@@ -53,6 +56,8 @@ boodal.alert({
     }
 });
 ```
+
+![Alert](doc/confirm.png)
 
 ### Basic `text`
 
@@ -66,6 +71,8 @@ boodal.text({
 });
 ```
 
+![Alert](doc/text.png)
+
 ### Basic `email`
 
 ```javascript
@@ -78,6 +85,8 @@ boodal.email({
 });
 ```
 
+![Alert](doc/email.png)
+
 ### Basic `number`
 
 ```javascript
@@ -89,6 +98,8 @@ boodal.number({
     }
 });
 ```
+
+![Alert](doc/number.png)
 
 ### Basic `select`
 
@@ -103,6 +114,8 @@ boodal.select({
 });
 ```
 
+![Alert](doc/select.png)
+
 ### Basic `checkbox`
 
 ```javascript
@@ -116,6 +129,8 @@ boodal.checkbox({
 });
 ```
 
+![Alert](doc/checkbox.png)
+
 ### Basic `radio`
 
 ```javascript
@@ -128,6 +143,8 @@ boodal.radio({
     'options': ['Rugby', 'Football'] // required, the radio optionas, can also be a key->value object
 });
 ```
+
+![Alert](doc/radio.png)
 
 #### `alert`
 
