@@ -34,6 +34,24 @@ let boodal = {
         };
 
         /**
+         *
+         * @returns {{cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": cancel.callback, "cancel.class": string, ok: string, "modal.close": boolean}}
+         */
+        this.confirmDefaults = function () {
+            return {
+                'ok': 'OK',
+                'ok.class': 'btn-primary',
+                'cancel': 'Cancel',
+                'cancel.callback': function(){},
+                'cancel.class': 'btn-light',
+                'modal.backdrop': 'static',
+                'modal.keyboard': false,
+                'modal.focus': true,
+                'modal.close': false
+            }
+        };
+
+        /**
          * The default key values for an alert dialog.
          *
          * @returns {{"modal.keyboard": boolean, "modal.focus": boolean, "modal.backdrop": string, "ok.callback": ok.callback, "ok.class": string, ok: string}}
@@ -208,7 +226,7 @@ let boodal = {
          */
         this.boodalPlace = function(modalClass, title, body, okText, cancelText, okClass, cancelClass, closeBtn) {
             let o = this;
-            let mm = $('<div />').addClass(modalClass).addClass('modal').attr('tabindex', '-1').attr('role', 'dialog');
+            let mm = $('<div />').addClass(modalClass).addClass('modal fade').attr('tabindex', '-1').attr('role', 'dialog');
             let md = $('<div />').addClass('modal-dialog').attr('role', 'document');
             let mc = $('<div />').addClass('modal-content');
             let mh = $('<div />').addClass('modal-header').html(
@@ -287,17 +305,17 @@ let boodal = {
                 $('.boodal-cancel', el).click();
             });
             el.on('hide.bs.modal', function(e){
+            });
+            el.on('hidden.bs.modal', function(){
+                o.resetModalEvents(sel);
                 let val = input.val();
                 if (typeof val === 'undefined') {
                     val = null;
                 } else if (val.length === 0) {
                     val = null;
                 }
-                opts['ok.callback'](val);
-            });
-            el.on('hidden.bs.modal', function(){
-                o.resetModalEvents(sel);
                 $('.' + sel).remove();
+                opts['ok.callback'](val);
             });
             $('.boodal-ok', el).on('click', function(e){
                 e.preventDefault();
@@ -329,14 +347,47 @@ let boodal = {
         el.modal(o._helpers().buildModalOpts(opts));
         o._helpers().resetModalEvents(sel);
         el.on('hide.bs.modal', function(){
-            opts['ok.callback']();
         });
         el.on('hidden.bs.modal', function(){
             o._helpers().resetModalEvents(sel);
             $('.' + sel).remove();
+            opts['ok.callback']();
         });
         $('.boodal-ok', el).on('click', function(e){
             e.preventDefault();
+            $('.' + sel).modal('hide');
+        });
+    },
+    confirm: function(opts) {
+        let o = this;
+        opts = o._helpers().requireKeys(
+            opts,
+            ['title', 'body', 'ok.callback'],
+            o._helpers().confirmDefaults(),
+        );
+        opts['modal.show'] = true;
+        opts['modal.close'] = false;
+        opts['modal.keyboard'] = false;
+        let sel = o._helpers().genClass();
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+        let el = $('.' + sel);
+        el.modal(o._helpers().buildModalOpts(opts));
+        o._helpers().resetModalEvents(sel);
+        el.on('hide.bs.modal', function(){
+        });
+        el.on('hidden.bs.modal', function(){
+            o._helpers().resetModalEvents(sel);
+            $('.' + sel).remove();
+            opts['ok.callback']();
+        });
+        $('.boodal-ok', el).on('click', function(e){
+            e.preventDefault();
+            $('.' + sel).modal('hide');
+        });
+        $('.boodal-cancel', el).on('click', function(e){
+            e.preventDefault();
+            el.off('hide.bs.modal');
+            opts['cancel.callback']();
             $('.' + sel).modal('hide');
         });
     },
@@ -391,18 +442,18 @@ let boodal = {
             opts['ok.callback'] = function () {};
             $('.boodal-cancel', el).click();
         });
-        el.on('hide.bs.modal', function(e){
+        el.on('hide.bs.modal', function(){
+        });
+        el.on('hidden.bs.modal', function(){
+            o._helpers().resetModalEvents(sel);
             let val = $('option:selected', select).attr('value');
             if (typeof val === 'undefined') {
                 val = null;
             } else if (val.length === 0) {
                 val = null;
             }
-            opts['ok.callback'](val);
-        });
-        el.on('hidden.bs.modal', function(){
-            o._helpers().resetModalEvents(sel);
             $('.' + sel).remove();
+            opts['ok.callback'](val);
         });
         $('.boodal-ok', el).on('click', function(e){
             e.preventDefault();
@@ -473,7 +524,10 @@ let boodal = {
             opts['ok.callback'] = function () {};
             $('.boodal-cancel', el).click();
         });
-        el.on('hide.bs.modal', function(e){
+        el.on('hide.bs.modal', function(){
+        });
+        el.on('hidden.bs.modal', function(){
+            o._helpers().resetModalEvents(sel);
             let checked = [];
             let elems = $('.boodal-check', $('.modal-body', el));
             for (let i=0;i<elems.length;i++) {
@@ -485,11 +539,8 @@ let boodal = {
             if (checked.length === 0) {
                 checked = null;
             }
-            opts['ok.callback'](checked);
-        });
-        el.on('hidden.bs.modal', function(){
-            o._helpers().resetModalEvents(sel);
             $('.' + sel).remove();
+            opts['ok.callback'](checked);
         });
         $('.boodal-ok', el).on('click', function(e){
             e.preventDefault();
@@ -562,17 +613,17 @@ let boodal = {
             $('.boodal-cancel', el).click();
         });
         el.on('hide.bs.modal', function(e){
+        });
+        el.on('hidden.bs.modal', function(){
+            o._helpers().resetModalEvents(sel);
             let val = $('.boodal-radio:checked', $('.modal-body', el)).attr('value');
             if (typeof val === 'undefined') {
                 val = null;
             } else if (val.length === 0) {
                 val = null;
             }
-            opts['ok.callback'](val);
-        });
-        el.on('hidden.bs.modal', function(){
-            o._helpers().resetModalEvents(sel);
             $('.' + sel).remove();
+            opts['ok.callback'](val);
         });
         $('.boodal-ok', el).on('click', function(e){
             e.preventDefault();

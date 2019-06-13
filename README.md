@@ -14,15 +14,13 @@ Boodal is an easy to use modal library for Bootstrap 4 for simple prompts.
 <body>
     
     <script>
-        boodal.alert(
-            {
-                'title': 'Unexpected Error', // required
-                'body': 'There has been an unexpected error', // required
-                'ok.callback': function(){  // optional, a callback on 'ok' triggered
-                    console.log('The alert was closed.');
-                }
+        boodal.alert({
+            'title': 'Unexpected Error', // required
+            'body': 'There has been an unexpected error', // required
+            'ok.callback': function(){  // optional, a callback on 'ok' triggered
+                console.log('The alert was closed.');
             }
-        );
+        });
     </script>
 </body>
 ```
@@ -41,6 +39,18 @@ All input/select/radio/checkbox prompts must also contain an `ok.callback` funct
 boodal.alert({
     'title': 'Unexpected Error', // required
     'body': 'There has been an unexpected error' // required, string or string of html
+});
+```
+
+### Basic `confirm`
+
+```javascript
+boodal.alert({
+    'confirm': 'Please confirm', // required
+    'body': 'Are you sure you want to do this?', // required, string or string of html
+    'ok.callback': function() { // required, a callback on confirming the modal.
+        console.log('Confirmed');
+    }
 });
 ```
 
@@ -140,6 +150,32 @@ boodal.alert(
         'modal.backdrop': 'static', // optional, boolean or 'static'. default 'static'
         'modal.keyboard': false, // optional, default false
         'modal.focus': true // optional, default true
+    }
+);
+```
+
+#### `confirm`
+
+To generate a simple confirmation box:
+
+```javascript
+boodal.confirm(
+    {
+        /* Required values */
+        'title': 'Please confirm', // required, the modal title
+        'body': 'Are you sure you want to do this?', // required, string or string of html
+        'ok.callback': function(){ // required, a callback on 'ok' triggered
+            console.log('Dismissed');
+        },
+
+        /* Optional values */
+        'ok': 'Yes', // optional, default 'Yes'
+        'ok.class': 'btn-primary', // optional, class name for the OK button, default 'btn-primary'
+        'cancel': 'Cancel',
+        'cancel.callback': function(){}, // optional, a callback when cancel is triggered.
+        'cancel.class': 'btn-light', // optional, class name for the cancel button, default 'btn-light'
+        'modal.backdrop': 'static', // optional, boolean or 'static'. default 'static'
+        'modal.focus': true, // optional, default true
     }
 );
 ```
