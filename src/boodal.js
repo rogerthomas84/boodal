@@ -324,8 +324,11 @@ let boodal = {
             $('.boodal-cancel', el).on('click', function(e){
                 e.preventDefault();
                 el.off('hide.bs.modal');
-                el.on('hide.bs.modal', function(){
+                el.off('hidden.bs.modal');
+                el.on('hidden.bs.modal', function(){
+                    $('.' + sel).remove();
                     opts['cancel.callback']();
+                    o._helpers().resetModalEvents(sel);
                 });
                 el.modal('hide');
             });
@@ -341,6 +344,7 @@ let boodal = {
             o._helpers().alertDefaults(),
         );
         opts['modal.show'] = true;
+        opts['cancel.callback'] = function(){};
         let sel = o._helpers().genClass();
         o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], null, opts['ok.class'], null, false);
         let el = $('.' + sel);
@@ -387,7 +391,12 @@ let boodal = {
         $('.boodal-cancel', el).on('click', function(e){
             e.preventDefault();
             el.off('hide.bs.modal');
-            opts['cancel.callback']();
+            el.off('hidden.bs.modal');
+            el.on('hidden.bs.modal', function() {
+                $('.' + sel).remove();
+                opts['cancel.callback']();
+                o._helpers().resetModalEvents(sel);
+            });
             $('.' + sel).modal('hide');
         });
     },
@@ -462,8 +471,11 @@ let boodal = {
         $('.boodal-cancel', el).on('click', function(e){
             e.preventDefault();
             el.off('hide.bs.modal');
-            el.on('hide.bs.modal', function(){
+            el.off('hidden.bs.modal');
+            el.on('hidden.bs.modal', function(){
+                $('.' + sel).remove();
                 opts['cancel.callback']();
+                o._helpers().resetModalEvents(sel);
             });
             el.modal('hide');
         });
@@ -549,8 +561,11 @@ let boodal = {
         $('.boodal-cancel', el).on('click', function(e){
             e.preventDefault();
             el.off('hide.bs.modal');
-            el.on('hide.bs.modal', function(){
+            el.off('hidden.bs.modal');
+            el.on('hidden.bs.modal', function(){
+                $('.' + sel).remove();
                 opts['cancel.callback']();
+                o._helpers().resetModalEvents(sel);
             });
             el.modal('hide');
         });
@@ -636,8 +651,11 @@ let boodal = {
         $('.boodal-cancel', el).on('click', function(e){
             e.preventDefault();
             el.off('hide.bs.modal');
-            el.on('hide.bs.modal', function(){
+            el.off('hidden.bs.modal');
+            el.on('hidden.bs.modal', function(){
+                $('.' + sel).remove();
                 opts['cancel.callback']();
+                o._helpers().resetModalEvents(sel);
             });
             el.modal('hide');
         });
