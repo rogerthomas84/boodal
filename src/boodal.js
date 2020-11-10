@@ -47,7 +47,8 @@ let boodal = {
                 'modal.backdrop': 'static',
                 'modal.keyboard': false,
                 'modal.focus': true,
-                'modal.close': false
+                'modal.close': false,
+                'modal-dialog.class': ''
             }
         };
 
@@ -64,6 +65,7 @@ let boodal = {
                 'modal.backdrop': 'static',
                 'modal.keyboard': false,
                 'modal.focus': true,
+                'modal-dialog.class': ''
                 //'modal.show': true // Hard coded for promptAlert and alert
             };
         };
@@ -104,11 +106,13 @@ let boodal = {
                 'cancel': 'Cancel',
                 'cancel.callback': function(){},
                 'cancel.class': 'btn-light',
+                'maxLength': null,
                 'modal.backdrop': 'static',
                 //'modal.keyboard': false,
                 'modal.focus': true,
-                'modal.close': true
+                'modal.close': true,
                 //'modal.show': true
+                'modal.dialog.class': ''
             };
         };
 
@@ -150,8 +154,16 @@ let boodal = {
          * @private
          */
         this.isHtml = function(str) {
-            let doc = new DOMParser().parseFromString(str, "text/html");
-            return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+            let a = document.createElement('div');
+            a.innerHTML = str;
+
+            for (let c = a.childNodes, i = c.length; i--; ) {
+                if (c[i].nodeType === 1) {
+                    return true;
+                }
+            }
+
+            return false;
         };
 
         /**
@@ -223,11 +235,15 @@ let boodal = {
          * @param okClass {string}
          * @param cancelClass {string}
          * @param closeBtn {boolean}
+         * @param modalDialogClass {string}
          */
-        this.boodalPlace = function(modalClass, title, body, okText, cancelText, okClass, cancelClass, closeBtn) {
+        this.boodalPlace = function(modalClass, title, body, okText, cancelText, okClass, cancelClass, closeBtn, modalDialogClass) {
             let o = this;
             let mm = $('<div />').addClass(modalClass).addClass('modal fade').attr('tabindex', '-1').attr('role', 'dialog');
             let md = $('<div />').addClass('modal-dialog').attr('role', 'document');
+            if (typeof modalDialogClass !== 'undefined' && modalDialogClass.length > 0) {
+                md.addClass(modalDialogClass);
+            }
             let mc = $('<div />').addClass('modal-content');
             let mh = $('<div />').addClass('modal-header').html(
                 $('<h5 />').addClass('modal-title').html(title)
@@ -273,14 +289,22 @@ let boodal = {
             opts = o._helpers().requireKeys(
                 opts,
                 o.inputRequired(),
-                o.inputDefaults(),
+                o.inputDefaults()
             );
             opts['modal.keyboard'] = false;
             opts['modal.show'] = true;
             let sel = o.genClass();
-            o.boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+            o.boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
             let el = $('.' + sel);
-            let inputel = $('<input />').attr('type', inputType).addClass('form-control').addClass('boodal-input');
+            let inputel;
+            if (inputType === 'textarea') {
+                if (typeof opts['rows'] === 'undefined') {
+                    opts['rows'] = 4;
+                }
+                inputel = $('<textarea />').addClass('form-control mb-0').addClass('boodal-input').attr('rows', opts['rows']);
+            } else {
+                inputel = $('<input />').attr('type', inputType).addClass('form-control mb-0').addClass('boodal-input');
+            }
             if (opts['val'] !== null) {
                 inputel.val(opts['val']);
             }
@@ -293,8 +317,54 @@ let boodal = {
             if (typeof opts['attrs']['id'] !== 'undefined') {
                 inputel.attr('id', opts['attrs']['id']);
             }
+            if (typeof opts['attrs']['maxlength'] !== 'undefined') {
+                opts['maxLength'] = opts['attrs']['maxlength'];
+            }
+            if (opts['maxLength'] !== null) {
+                opts['attrs']['maxlength'] = opts['maxLength'];
+            }
+            for (let attrK in opts['attrs']) {
+                if (opts['attrs'].hasOwnProperty(attrK) === false) {
+                    continue;
+                }
+                if (attrK !== 'id' && attrK !== 'class' && attrK !== 'maxlength') {
+                    inputel.attr(attrK, opts['attrs'][attrK]);
+                }
+            }
+            let hasMaxLength = false;
+            if (typeof opts['maxLength'] !== 'undefined' && opts['maxLength'] !== null) {
+                inputel.attr('maxlength', opts['maxLength']);
+                hasMaxLength = true;
+            }
             $('.modal-body', el).append(inputel);
-            let input = $('.modal-body input.boodal-input', el);
+            if (hasMaxLength === true) {
+                inputel.after('<span class="badge rounded-bottom badge-primary float-right mr-1 mt-1 boodalCharCounter">0 / ' + opts['maxLength'] + '</span>');
+            }
+            if (hasMaxLength === true) {
+                inputel.off('keyup').on('keyup', function(){
+                    let counter = $('.boodalCharCounter');
+                    counter.html(String(inputel.val().length) + ' / ' + opts['maxLength']);
+                    if (inputel.val().length > opts['maxLength']) {
+                        counter.addClass('badge-danger');
+                        counter.removeClass('badge-primary');
+                        counter.removeClass('badge-success');
+                    } else if (inputel.val().length === opts['maxLength']) {
+                        counter.addClass('badge-success');
+                        counter.removeClass('badge-primary');
+                        counter.removeClass('badge-danger');
+                    } else {
+                        counter.addClass('badge-primary');
+                        counter.removeClass('badge-danger');
+                        counter.removeClass('badge-success');
+                    }
+                });
+            }
+            let input;
+            if (inputType === 'textarea') {
+                input = $('.modal-body textarea.boodal-input', el);
+            } else {
+                input = $('.modal-body input.boodal-input', el);
+            }
             el.on('shown.bs.modal', function(e){
                 input.focus();
             });
@@ -302,9 +372,11 @@ let boodal = {
             o.resetModalEvents(sel);
             $('button.close', el).on('click', function(){
                 opts['ok.callback'] = function () {};
+                inputel.off('keyup');
                 $('.boodal-cancel', el).click();
             });
             el.on('hide.bs.modal', function(e){
+                inputel.off('keyup');
             });
             el.on('hidden.bs.modal', function(){
                 o.resetModalEvents(sel);
@@ -315,6 +387,7 @@ let boodal = {
                     val = null;
                 }
                 $('.' + sel).remove();
+                inputel.off('keyup');
                 opts['ok.callback'](val);
             });
             $('.boodal-ok', el).on('click', function(e){
@@ -332,6 +405,7 @@ let boodal = {
                 });
                 el.modal('hide');
             });
+            inputel.trigger('keyup');
         };
 
         return this;
@@ -341,12 +415,12 @@ let boodal = {
         opts = o._helpers().requireKeys(
             opts,
             ['title', 'body'],
-            o._helpers().alertDefaults(),
+            o._helpers().alertDefaults()
         );
         opts['modal.show'] = true;
         opts['cancel.callback'] = function(){};
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], null, opts['ok.class'], null, false);
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], null, opts['ok.class'], null, false, opts['modal-dialog.class']);
         let el = $('.' + sel);
         el.modal(o._helpers().buildModalOpts(opts));
         o._helpers().resetModalEvents(sel);
@@ -367,13 +441,13 @@ let boodal = {
         opts = o._helpers().requireKeys(
             opts,
             ['title', 'body', 'ok.callback'],
-            o._helpers().confirmDefaults(),
+            o._helpers().confirmDefaults()
         );
         opts['modal.show'] = true;
         opts['modal.close'] = false;
         opts['modal.keyboard'] = false;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
         let el = $('.' + sel);
         el.modal(o._helpers().buildModalOpts(opts));
         o._helpers().resetModalEvents(sel);
@@ -405,12 +479,12 @@ let boodal = {
         opts = o._helpers().requireKeys(
             opts,
             o._helpers().multiRequired(),
-            o._helpers().singleFromMultiDefaults(),
+            o._helpers().singleFromMultiDefaults()
         );
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
         let el = $('.' + sel);
         let selEl = $('<select />').addClass('custom-select').addClass('boodal-select');
         if (opts['placeholder'] !== null) {
@@ -485,15 +559,17 @@ let boodal = {
         opts = o._helpers().requireKeys(
             opts,
             o._helpers().multiRequired(),
-            o._helpers().multiFromMultiDefaults(),
+            o._helpers().multiFromMultiDefaults()
         );
+
         if (!Array.isArray(opts['vals'])) {
             opts['vals'] = [];
         }
+
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
         let el = $('.' + sel);
 
         let possibles = o._helpers().arrayToObjectForMulti(opts['options']);
@@ -575,12 +651,12 @@ let boodal = {
         opts = o._helpers().requireKeys(
             opts,
             o._helpers().multiRequired(),
-            o._helpers().singleFromMultiDefaults(),
+            o._helpers().singleFromMultiDefaults()
         );
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close']);
+        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
         let el = $('.' + sel);
         let radioName = 'boodalRadio' + o._helpers().genId();
         let possibles = o._helpers().arrayToObjectForMulti(opts['options']);
@@ -663,6 +739,10 @@ let boodal = {
     text: function(opts) {
         let o = this;
         o._helpers().genericInput(opts, 'text');
+    },
+    textarea: function(opts) {
+        let o = this;
+        o._helpers().genericInput(opts, 'textarea');
     },
     email: function(opts) {
         let o = this;

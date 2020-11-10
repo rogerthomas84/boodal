@@ -29,7 +29,9 @@ Boodal is an easy to use modal library for Bootstrap 4 for simple prompts.
 
 All boodal modals are required to have the `title` and `body` keys provided.
 
-All input/select/radio/checkbox prompts must also contain an `ok.callback` function which will pass back the value, or (or array of values for checkboxes) selected. If no value is provided, the value is always `null`.
+All input/textarea/confirm/select/radio/checkbox prompts must also contain an `ok.callback` function which will pass back the value, or (or array of values for checkboxes) selected. If no value is provided, the value is always `null`.
+
+Inputs or textareas can contain the `maxLength` key to show a helpful character counter.
 
 ## Available Prompts
 
