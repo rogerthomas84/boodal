@@ -228,27 +228,20 @@ let boodal = {
          * Create a boodal modal and place it within the body of the document.
          *
          * @param modalClass {string}
-         * @param title {string}
-         * @param body {string}
-         * @param okText {string}
-         * @param cancelText {string}
-         * @param okClass {string}
-         * @param cancelClass {string}
-         * @param closeBtn {boolean}
-         * @param modalDialogClass {string}
+         * @param opts {Object}
          */
-        this.boodalPlace = function(modalClass, title, body, okText, cancelText, okClass, cancelClass, closeBtn, modalDialogClass) {
+        this.boodalPlace = function(modalClass, opts) {
             let o = this;
             let mm = $('<div />').addClass(modalClass).addClass('modal fade').attr('tabindex', '-1').attr('role', 'dialog');
             let md = $('<div />').addClass('modal-dialog').attr('role', 'document');
-            if (typeof modalDialogClass !== 'undefined' && modalDialogClass.length > 0) {
-                md.addClass(modalDialogClass);
+            if (typeof opts['modal-dialog.class'] !== 'undefined' && opts['modal-dialog.class'].length > 0) {
+                md.addClass(opts['modal-dialog.class']);
             }
             let mc = $('<div />').addClass('modal-content');
             let mh = $('<div />').addClass('modal-header').html(
-                $('<h5 />').addClass('modal-title').html(title)
+                $('<h5 />').addClass('modal-title').html(opts['title'])
             );
-            if (closeBtn === true) {
+            if (opts['modal.close'] === true) {
                 mh.append(
                     $('<button />').addClass('close').attr('type', 'button').attr('data-dismiss', 'modal').attr('aria-label', 'Close').html(
                         $('<span />').attr('aria-hidden', 'true').html('&times;')
@@ -256,20 +249,20 @@ let boodal = {
                 );
             }
 
-            if (!o.isHtml(body)) {
-                body = $('<p />').addClass('boodal-p').html(body);
+            if (!o.isHtml(opts['body'])) {
+                opts['body'] = $('<p />').addClass('boodal-p').html(opts['body']);
             }
             mc.append(mh).append(
-                $('<div />').addClass('modal-body').html(body)
+                $('<div />').addClass('modal-body').html(opts['body'])
             );
 
             let modalFooter = $('<div />').addClass('modal-footer pr-2 pt-2 pb-2 pl-2');
-            if (okText !== null) {
-                let pos = $('<button />').attr('type', 'button').addClass('btn boodal-ok').addClass(okClass).html(okText);
+            if (opts['ok'] !== null) {
+                let pos = $('<button />').attr('type', 'button').addClass('btn boodal-ok').addClass(opts['ok.class']).html(opts['ok']);
                 modalFooter.append(pos);
             }
-            if (cancelText !== null) {
-                let neg = $('<button />').attr('type', 'button').addClass('btn').addClass('boodal-cancel').addClass(cancelClass).html(cancelText).attr('data-dismiss', 'modal');
+            if (opts['cancel'] !== null) {
+                let neg = $('<button />').attr('type', 'button').addClass('btn').addClass('boodal-cancel').addClass(opts['cancel.class']).html(opts['cancel']).attr('data-dismiss', 'modal');
                 modalFooter.prepend(neg);
             }
             mc.append(modalFooter);
@@ -294,7 +287,7 @@ let boodal = {
             opts['modal.keyboard'] = false;
             opts['modal.show'] = true;
             let sel = o.genClass();
-            o.boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
+            o.boodalPlace(sel, opts);
             let el = $('.' + sel);
             let inputel;
             if (inputType === 'textarea') {
@@ -307,6 +300,10 @@ let boodal = {
             }
             if (opts['val'] !== null) {
                 inputel.val(opts['val']);
+            }
+
+            if (typeof opts['attrs']['placeholder'] !== 'undefined') {
+                opts['placeholder'] = opts['attrs']['placeholder'];
             }
             if (opts['placeholder'] !== null) {
                 inputel.attr('placeholder', opts['placeholder']);
@@ -323,11 +320,15 @@ let boodal = {
             if (opts['maxLength'] !== null) {
                 opts['attrs']['maxlength'] = opts['maxLength'];
             }
+            if (inputType === 'date' && typeof opts['placeholder'] === 'undefined') {
+                inputel.attr('placeholder', 'YYYY-MM-DD'); // safari
+            }
+            let disallowedAttrs = ['id', 'class', 'maxlength', 'placeholder'];
             for (let attrK in opts['attrs']) {
                 if (opts['attrs'].hasOwnProperty(attrK) === false) {
                     continue;
                 }
-                if (attrK !== 'id' && attrK !== 'class' && attrK !== 'maxlength') {
+                if (disallowedAttrs.indexOf(attrK) === -1) {
                     inputel.attr(attrK, opts['attrs'][attrK]);
                 }
             }
@@ -420,7 +421,10 @@ let boodal = {
         opts['modal.show'] = true;
         opts['cancel.callback'] = function(){};
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], null, opts['ok.class'], null, false, opts['modal-dialog.class']);
+        opts['cancel'] = null;
+        opts['cancel.class'] = null;
+        opts['modal.close'] = false;
+        o._helpers().boodalPlace(sel, opts);
         let el = $('.' + sel);
         el.modal(o._helpers().buildModalOpts(opts));
         o._helpers().resetModalEvents(sel);
@@ -447,7 +451,7 @@ let boodal = {
         opts['modal.close'] = false;
         opts['modal.keyboard'] = false;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
+        o._helpers().boodalPlace(sel, opts);
         let el = $('.' + sel);
         el.modal(o._helpers().buildModalOpts(opts));
         o._helpers().resetModalEvents(sel);
@@ -484,7 +488,7 @@ let boodal = {
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
+        o._helpers().boodalPlace(sel, opts);
         let el = $('.' + sel);
         let selEl = $('<select />').addClass('custom-select').addClass('boodal-select');
         if (opts['placeholder'] !== null) {
@@ -569,7 +573,7 @@ let boodal = {
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
+        o._helpers().boodalPlace(sel, opts);
         let el = $('.' + sel);
 
         let possibles = o._helpers().arrayToObjectForMulti(opts['options']);
@@ -656,7 +660,7 @@ let boodal = {
         opts['modal.keyboard'] = false;
         opts['modal.show'] = true;
         let sel = o._helpers().genClass();
-        o._helpers().boodalPlace(sel, opts['title'], opts['body'], opts['ok'], opts['cancel'], opts['ok.class'], opts['cancel.class'], opts['modal.close'], opts['modal-dialog.class']);
+        o._helpers().boodalPlace(sel, opts);
         let el = $('.' + sel);
         let radioName = 'boodalRadio' + o._helpers().genId();
         let possibles = o._helpers().arrayToObjectForMulti(opts['options']);
@@ -747,6 +751,10 @@ let boodal = {
     email: function(opts) {
         let o = this;
         o._helpers().genericInput(opts, 'email');
+    },
+    date: function(opts) {
+        let o = this;
+        o._helpers().genericInput(opts, 'date');
     },
     number: function(opts) {
         let o = this;

@@ -33,6 +33,15 @@ All input/textarea/confirm/select/radio/checkbox prompts must also contain an `o
 
 Inputs or textareas can contain the `maxLength` key to show a helpful character counter.
 
+## Minifying
+
+Download `yuicompressor-2.4.8.jar` and run:
+
+```
+java -jar yuicompressor-2.4.8.jar --type js public/assets/js/boodal/boodal.js > public/assets/js/boodal/boodal.min.js
+```
+
+
 ## Available Prompts
 
 ### Basic `alert`
