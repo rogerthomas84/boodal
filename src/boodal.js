@@ -35,7 +35,7 @@ let boodal = {
 
         /**
          *
-         * @returns {{cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": cancel.callback, "cancel.class": string, ok: string, "modal.close": boolean}}
+         * @returns {{cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": function, "cancel.class": string, ok: string, "modal.close": boolean}}
          */
         this.confirmDefaults = function () {
             return {
@@ -55,7 +55,7 @@ let boodal = {
         /**
          * The default key values for an alert dialog.
          *
-         * @returns {{"modal.keyboard": boolean, "modal.focus": boolean, "modal.backdrop": string, "ok.callback": ok.callback, "ok.class": string, ok: string}}
+         * @returns {{"modal.keyboard": boolean, "modal.focus": boolean, "modal.backdrop": string, "ok.callback": function, "ok.class": string, ok: string}}
          */
         this.alertDefaults = function() {
             return {
@@ -73,7 +73,7 @@ let boodal = {
         /**
          * Get the default values for a radio box.
          *
-         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": cancel.callback, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
+         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": function, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
          */
         this.multiFromMultiDefaults = function() {
             let v = this.singleFromMultiDefaults();
@@ -85,7 +85,7 @@ let boodal = {
         /**
          * Get the default values for an alert box.
          *
-         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": cancel.callback, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
+         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": function, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
          */
         this.inputDefaults = function() {
             return this.singleFromMultiDefaults();
@@ -94,7 +94,7 @@ let boodal = {
         /**
          * Get the default key values for a single value from a multi list (select & radio)
          *
-         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": cancel.callback, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
+         * @returns {{val: null, cancel: string, "modal.focus": boolean, "modal.backdrop": string, "ok.class": string, "cancel.callback": function, "cancel.class": string, placeholder: null, ok: string, "modal.close": boolean, attrs: {}}}
          */
         this.singleFromMultiDefaults = function() {
             return {
